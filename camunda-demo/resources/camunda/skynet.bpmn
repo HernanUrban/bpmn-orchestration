@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_014us4i" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="skynet-demo" isExecutable="true">
+    <bpmn:startEvent id="start-event" name="skynet starting flow" camunda:asyncBefore="true">
+      <bpmn:outgoing>Flow_1qinkwa</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="create-user-with-external-id" name="Create user with external ID" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:delegateExpression="${http}">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="url">${urls.mock}/user/external</camunda:inputParameter>
+          <camunda:inputParameter name="method">post</camunda:inputParameter>
+          <camunda:inputParameter name="body">
+            <camunda:map>
+              <camunda:entry key="userId">${userId}</camunda:entry>
+            </camunda:map>
+          </camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1a5dlzw</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ebdhf0</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_1jllr40" name="Ignored Duplicated Tx">
+      <bpmn:incoming>Flow_0rpgokv</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="check-duplicated-business-key" name="Check duplicated business key" camunda:delegateExpression="${checkDuplicatedBusinessKey}">
+      <bpmn:incoming>Flow_1qinkwa</bpmn:incoming>
+      <bpmn:outgoing>Flow_1a5dlzw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:boundaryEvent id="Event_01e2pib" name="Duplicated" attachedToRef="check-duplicated-business-key">
+      <bpmn:outgoing>Flow_0rpgokv</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_0o4gjum" errorRef="Error_0rsvc8p" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_1qinkwa" sourceRef="start-event" targetRef="check-duplicated-business-key" />
+    <bpmn:sequenceFlow id="Flow_1a5dlzw" sourceRef="check-duplicated-business-key" targetRef="create-user-with-external-id" />
+    <bpmn:sequenceFlow id="Flow_0rpgokv" sourceRef="Event_01e2pib" targetRef="Event_1jllr40" />
+    <bpmn:endEvent id="Event_0gpy4n9" name="Onboarding fInished w/manual">
+      <bpmn:incoming>Flow_0vxa2o8</bpmn:incoming>
+      <bpmn:incoming>Flow_09sl35n</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="update-kyc-docs" name="Update KYC Docs" camunda:asyncAfter="true" camunda:delegateExpression="${http}">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="url">${urls.mock}/kyc/document/update</camunda:inputParameter>
+          <camunda:inputParameter name="method">post</camunda:inputParameter>
+          <camunda:inputParameter name="body">
+            <camunda:map>
+              <camunda:entry key="userId">${userId}</camunda:entry>
+            </camunda:map>
+          </camunda:inputParameter>
+          <camunda:outputParameter name="requestPermissionsCounter">${0}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1wgpw9g</bpmn:incoming>
+      <bpmn:outgoing>Flow_03hed0i</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="update-user-status-in-progress" name="Update &#10;User status &#10;IN_PROGRESS" camunda:asyncBefore="true" camunda:delegateExpression="${http}">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="url">${urls.mock}/user/${userId}/status</camunda:inputParameter>
+          <camunda:inputParameter name="method">put</camunda:inputParameter>
+          <camunda:inputParameter name="body">
+            <camunda:map>
+              <camunda:entry key="newStatus">IN_PROGRESS</camunda:entry>
+              <camunda:entry key="idempotencyKey">${idempotencyKey}</camunda:entry>
+            </camunda:map>
+          </camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0856p4h</bpmn:incoming>
+      <bpmn:outgoing>Flow_1wgpw9g</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_0i9yxzj" name="Update User status [ACCEPTED]" camunda:asyncBefore="true" camunda:delegateExpression="${http}">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="url">${urls.mock}/user/${userId}/status</camunda:inputParameter>
+          <camunda:inputParameter name="method">put</camunda:inputParameter>
+          <camunda:inputParameter name="body">
+            <camunda:map>
+              <camunda:entry key="newStatus">ACCEPTED</camunda:entry>
+              <camunda:entry key="idempotencyKey">${idempotencyKey}</camunda:entry>
+            </camunda:map>
+          </camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_16suekb</bpmn:incoming>
+      <bpmn:outgoing>Flow_0vxa2o8</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="get-user-permissions" name="Get User permissions" camunda:delegateExpression="${http}">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="url">${urls.mock}/user/${userId}/permissions</camunda:inputParameter>
+          <camunda:inputParameter name="method">get</camunda:inputParameter>
+          <camunda:outputParameter name="userPermissions">${body.data.permissions}</camunda:outputParameter>
+          <camunda:outputParameter name="requestPermissionsCounter">${requestPermissionsCounter + 1}</camunda:outputParameter>
+          <camunda:outputParameter name="userStatus">${body.data.status}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_03hed0i</bpmn:incoming>
+      <bpmn:incoming>Flow_1rm84im</bpmn:incoming>
+      <bpmn:outgoing>Flow_1v6pm9y</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_047pp1y" default="Flow_1qfxygf">
+      <bpmn:incoming>Flow_09ku2kj</bpmn:incoming>
+      <bpmn:outgoing>Flow_1qfxygf</bpmn:outgoing>
+      <bpmn:outgoing>Flow_191h62r</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1z0fpmd</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:intermediateCatchEvent id="Event_1fozlh1" name="dmnTime">
+      <bpmn:incoming>Flow_1qfxygf</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rm84im</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0v381ao">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">${dmnResult}</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:businessRuleTask id="check-permisions" name="Check Permissions" camunda:resultVariable="dmnResult" camunda:decisionRef="checkPermissionsTable" camunda:mapDecisionResult="singleEntry">
+      <bpmn:incoming>Flow_1v6pm9y</bpmn:incoming>
+      <bpmn:outgoing>Flow_09ku2kj</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:receiveTask id="Activity_1gikdbo" name="Receive User revision" camunda:asyncAfter="true" messageRef="Message_1ruwsxt">
+      <bpmn:incoming>Flow_1gwzgcr</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rk3kjd</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:exclusiveGateway id="Gateway_0968wqe" default="Flow_0mn7sk4">
+      <bpmn:incoming>Flow_0irx80z</bpmn:incoming>
+      <bpmn:outgoing>Flow_16suekb</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0mn7sk4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Activity_1cm7omn" name="Update User status [REJECTED]" camunda:asyncBefore="true" camunda:delegateExpression="${http}">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="url">${urls.mock}/user/${userId}/status</camunda:inputParameter>
+          <camunda:inputParameter name="method">put</camunda:inputParameter>
+          <camunda:inputParameter name="body">
+            <camunda:map>
+              <camunda:entry key="newStatus">REJECTED</camunda:entry>
+              <camunda:entry key="idempotencyKey">${idempotencyKey}</camunda:entry>
+            </camunda:map>
+          </camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0mn7sk4</bpmn:incoming>
+      <bpmn:outgoing>Flow_09sl35n</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_16yp5r9" name="Update User status [PENDING]" camunda:asyncBefore="true" camunda:delegateExpression="${http}">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="url">${urls.mock}/user/${userId}/status</camunda:inputParameter>
+          <camunda:inputParameter name="method">put</camunda:inputParameter>
+          <camunda:inputParameter name="body">
+            <camunda:map>
+              <camunda:entry key="newStatus">PENDING</camunda:entry>
+              <camunda:entry key="idempotencyKey">${idempotencyKey}</camunda:entry>
+            </camunda:map>
+          </camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1szr7rr</bpmn:incoming>
+      <bpmn:outgoing>Flow_1gwzgcr</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="update-user-status-in-accepted" name="Update User status [ACCEPTED]" camunda:asyncBefore="true" camunda:delegateExpression="${http}">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="url">${urls.mock}/user/${userId}/status</camunda:inputParameter>
+          <camunda:inputParameter name="method">put</camunda:inputParameter>
+          <camunda:inputParameter name="body">
+            <camunda:map>
+              <camunda:entry key="newStatus">ACCEPTED</camunda:entry>
+              <camunda:entry key="idempotencyKey">${idempotencyKey}</camunda:entry>
+            </camunda:map>
+          </camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0a80pxv</bpmn:incoming>
+      <bpmn:outgoing>Flow_11yhh9o</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="end-event" name="Onboarding fInished">
+      <bpmn:incoming>Flow_11yhh9o</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:scriptTask id="Activity_1tiubxg" name="Generate idempotency key" scriptFormat="javascript" camunda:resultVariable="idempotencyKey">
+      <bpmn:documentation>Generacion de idempotency key para la modificación de estado de la wallet.</bpmn:documentation>
+      <bpmn:incoming>Flow_1ebdhf0</bpmn:incoming>
+      <bpmn:outgoing>Flow_0856p4h</bpmn:outgoing>
+      <bpmn:script>function createUUID() {
+   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r &amp; 0x3 | 0x8);
+      return v.toString(16);
+   });
+}
+
+createUUID()</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="Activity_1bfwpwz" name="Generate idempotency key" scriptFormat="javascript" camunda:resultVariable="idempotencyKey">
+      <bpmn:documentation>Generacion de idempotency key para la modificación de estado de la wallet.</bpmn:documentation>
+      <bpmn:incoming>Flow_1rk3kjd</bpmn:incoming>
+      <bpmn:outgoing>Flow_0irx80z</bpmn:outgoing>
+      <bpmn:script>function createUUID() {
+   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r &amp; 0x3 | 0x8);
+      return v.toString(16);
+   });
+}
+
+createUUID()</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="Activity_1ilxk2t" name="Generate idempotency key" scriptFormat="javascript" camunda:resultVariable="idempotencyKey">
+      <bpmn:documentation>Generacion de idempotency key para la modificación de estado de la wallet.</bpmn:documentation>
+      <bpmn:incoming>Flow_191h62r</bpmn:incoming>
+      <bpmn:outgoing>Flow_1szr7rr</bpmn:outgoing>
+      <bpmn:script>function createUUID() {
+   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r &amp; 0x3 | 0x8);
+      return v.toString(16);
+   });
+}
+
+createUUID()</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="Activity_1beagys" name="Generate idempotency key" scriptFormat="javascript" camunda:resultVariable="idempotencyKey">
+      <bpmn:documentation>Generacion de idempotency key para la modificación de estado de la wallet.</bpmn:documentation>
+      <bpmn:incoming>Flow_1z0fpmd</bpmn:incoming>
+      <bpmn:outgoing>Flow_0a80pxv</bpmn:outgoing>
+      <bpmn:script>function createUUID() {
+   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r &amp; 0x3 | 0x8);
+      return v.toString(16);
+   });
+}
+
+createUUID()</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_0vxa2o8" sourceRef="Activity_0i9yxzj" targetRef="Event_0gpy4n9" />
+    <bpmn:sequenceFlow id="Flow_09sl35n" sourceRef="Activity_1cm7omn" targetRef="Event_0gpy4n9" />
+    <bpmn:sequenceFlow id="Flow_1wgpw9g" sourceRef="update-user-status-in-progress" targetRef="update-kyc-docs" />
+    <bpmn:sequenceFlow id="Flow_03hed0i" sourceRef="update-kyc-docs" targetRef="get-user-permissions" />
+    <bpmn:sequenceFlow id="Flow_0856p4h" sourceRef="Activity_1tiubxg" targetRef="update-user-status-in-progress" />
+    <bpmn:sequenceFlow id="Flow_16suekb" sourceRef="Gateway_0968wqe" targetRef="Activity_0i9yxzj">
+      <bpmn:documentation>${ revision.allowedCreation == true }</bpmn:documentation>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${ revision.newStatus == "ACCEPTED" }</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1rm84im" sourceRef="Event_1fozlh1" targetRef="get-user-permissions" />
+    <bpmn:sequenceFlow id="Flow_1v6pm9y" sourceRef="get-user-permissions" targetRef="check-permisions" />
+    <bpmn:sequenceFlow id="Flow_09ku2kj" sourceRef="check-permisions" targetRef="Gateway_047pp1y" />
+    <bpmn:sequenceFlow id="Flow_1qfxygf" name="Less than 25 requests without products enabled" sourceRef="Gateway_047pp1y" targetRef="Event_1fozlh1" />
+    <bpmn:sequenceFlow id="Flow_191h62r" name="25 request without products enabled" sourceRef="Gateway_047pp1y" targetRef="Activity_1ilxk2t">
+      <bpmn:documentation>${ dmnResult == "ERROR" }</bpmn:documentation>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${ dmnResult == "ERROR" }</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1z0fpmd" sourceRef="Gateway_047pp1y" targetRef="Activity_1beagys">
+      <bpmn:documentation>${ dmnResult == "OK" }</bpmn:documentation>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${ dmnResult == "OK" }</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1gwzgcr" sourceRef="Activity_16yp5r9" targetRef="Activity_1gikdbo" />
+    <bpmn:sequenceFlow id="Flow_1rk3kjd" sourceRef="Activity_1gikdbo" targetRef="Activity_1bfwpwz" />
+    <bpmn:sequenceFlow id="Flow_0irx80z" sourceRef="Activity_1bfwpwz" targetRef="Gateway_0968wqe" />
+    <bpmn:sequenceFlow id="Flow_0mn7sk4" sourceRef="Gateway_0968wqe" targetRef="Activity_1cm7omn" />
+    <bpmn:sequenceFlow id="Flow_1szr7rr" sourceRef="Activity_1ilxk2t" targetRef="Activity_16yp5r9" />
+    <bpmn:sequenceFlow id="Flow_0a80pxv" sourceRef="Activity_1beagys" targetRef="update-user-status-in-accepted" />
+    <bpmn:sequenceFlow id="Flow_11yhh9o" sourceRef="update-user-status-in-accepted" targetRef="end-event" />
+    <bpmn:sequenceFlow id="Flow_1ebdhf0" sourceRef="create-user-with-external-id" targetRef="Activity_1tiubxg" />
+  </bpmn:process>
+  <bpmn:error id="Error_0rsvc8p" name="Error_22gi0rp" errorCode="business-key.duplicated" />
+  <bpmn:message id="Message_1ruwsxt" name="UserRevisionChanged_${userId}" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="skynet-demo">
+      <bpmndi:BPMNEdge id="Flow_1ebdhf0_di" bpmnElement="Flow_1ebdhf0">
+        <di:waypoint x="560" y="267" />
+        <di:waypoint x="660" y="267" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11yhh9o_di" bpmnElement="Flow_11yhh9o">
+        <di:waypoint x="2110" y="267" />
+        <di:waypoint x="2252" y="267" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0a80pxv_di" bpmnElement="Flow_0a80pxv">
+        <di:waypoint x="1980" y="267" />
+        <di:waypoint x="2010" y="267" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1szr7rr_di" bpmnElement="Flow_1szr7rr">
+        <di:waypoint x="1610" y="477" />
+        <di:waypoint x="1640" y="477" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0mn7sk4_di" bpmnElement="Flow_0mn7sk4">
+        <di:waypoint x="2050" y="502" />
+        <di:waypoint x="2050" y="560" />
+        <di:waypoint x="2090" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0irx80z_di" bpmnElement="Flow_0irx80z">
+        <di:waypoint x="2000" y="477" />
+        <di:waypoint x="2025" y="477" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rk3kjd_di" bpmnElement="Flow_1rk3kjd">
+        <di:waypoint x="1870" y="477" />
+        <di:waypoint x="1900" y="477" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gwzgcr_di" bpmnElement="Flow_1gwzgcr">
+        <di:waypoint x="1740" y="477" />
+        <di:waypoint x="1770" y="477" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1z0fpmd_di" bpmnElement="Flow_1z0fpmd">
+        <di:waypoint x="1485" y="267" />
+        <di:waypoint x="1880" y="267" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_191h62r_di" bpmnElement="Flow_191h62r">
+        <di:waypoint x="1460" y="292" />
+        <di:waypoint x="1460" y="477" />
+        <di:waypoint x="1510" y="477" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1369" y="370" width="81" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qfxygf_di" bpmnElement="Flow_1qfxygf">
+        <di:waypoint x="1460" y="242" />
+        <di:waypoint x="1460" y="147" />
+        <di:waypoint x="1328" y="147" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1369" y="100" width="85" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09ku2kj_di" bpmnElement="Flow_09ku2kj">
+        <di:waypoint x="1370" y="267" />
+        <di:waypoint x="1435" y="267" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1v6pm9y_di" bpmnElement="Flow_1v6pm9y">
+        <di:waypoint x="1210" y="267" />
+        <di:waypoint x="1270" y="267" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rm84im_di" bpmnElement="Flow_1rm84im">
+        <di:waypoint x="1292" y="147" />
+        <di:waypoint x="1160" y="147" />
+        <di:waypoint x="1160" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_16suekb_di" bpmnElement="Flow_16suekb">
+        <di:waypoint x="2050" y="452" />
+        <di:waypoint x="2050" y="390" />
+        <di:waypoint x="2090" y="390" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0856p4h_di" bpmnElement="Flow_0856p4h">
+        <di:waypoint x="760" y="267" />
+        <di:waypoint x="800" y="267" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03hed0i_di" bpmnElement="Flow_03hed0i">
+        <di:waypoint x="1050" y="267" />
+        <di:waypoint x="1110" y="267" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1wgpw9g_di" bpmnElement="Flow_1wgpw9g">
+        <di:waypoint x="900" y="267" />
+        <di:waypoint x="950" y="267" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09sl35n_di" bpmnElement="Flow_09sl35n">
+        <di:waypoint x="2190" y="560" />
+        <di:waypoint x="2211" y="560" />
+        <di:waypoint x="2211" y="480" />
+        <di:waypoint x="2262" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vxa2o8_di" bpmnElement="Flow_0vxa2o8">
+        <di:waypoint x="2190" y="390" />
+        <di:waypoint x="2211" y="390" />
+        <di:waypoint x="2211" y="480" />
+        <di:waypoint x="2262" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rpgokv_di" bpmnElement="Flow_0rpgokv">
+        <di:waypoint x="330" y="325" />
+        <di:waypoint x="330" y="390" />
+        <di:waypoint x="492" y="390" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1a5dlzw_di" bpmnElement="Flow_1a5dlzw">
+        <di:waypoint x="370" y="267" />
+        <di:waypoint x="460" y="267" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qinkwa_di" bpmnElement="Flow_1qinkwa">
+        <di:waypoint x="208" y="267" />
+        <di:waypoint x="270" y="267" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BPMNShape_1yz0c9d" bpmnElement="start-event">
+        <dc:Bounds x="172" y="249" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="157" y="292" width="71" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0cncc8p_di" bpmnElement="create-user-with-external-id">
+        <dc:Bounds x="460" y="227" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1jllr40_di" bpmnElement="Event_1jllr40">
+        <dc:Bounds x="492" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="476" y="415" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_098hhlg_di" bpmnElement="check-duplicated-business-key">
+        <dc:Bounds x="270" y="227" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0gpy4n9_di" bpmnElement="Event_0gpy4n9">
+        <dc:Bounds x="2262" y="462" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2236" y="505" width="89" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0k29j6n_di" bpmnElement="update-kyc-docs">
+        <dc:Bounds x="950" y="227" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_12abmr3_di" bpmnElement="update-user-status-in-progress">
+        <dc:Bounds x="800" y="227" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0i9yxzj_di" bpmnElement="Activity_0i9yxzj">
+        <dc:Bounds x="2090" y="350" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0widb3r_di" bpmnElement="get-user-permissions">
+        <dc:Bounds x="1110" y="227" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_047pp1y_di" bpmnElement="Gateway_047pp1y" isMarkerVisible="true">
+        <dc:Bounds x="1435" y="242" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0by9v65_di" bpmnElement="Event_1fozlh1">
+        <dc:Bounds x="1292" y="129" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1288" y="172" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0jcjaik_di" bpmnElement="check-permisions">
+        <dc:Bounds x="1270" y="227" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1oduadq_di" bpmnElement="Activity_1gikdbo">
+        <dc:Bounds x="1770" y="437" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0968wqe_di" bpmnElement="Gateway_0968wqe" isMarkerVisible="true">
+        <dc:Bounds x="2025" y="452" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1cm7omn_di" bpmnElement="Activity_1cm7omn">
+        <dc:Bounds x="2090" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_16yp5r9_di" bpmnElement="Activity_16yp5r9">
+        <dc:Bounds x="1640" y="437" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1r2y7y4_di" bpmnElement="update-user-status-in-accepted">
+        <dc:Bounds x="2010" y="227" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0amdeen_di" bpmnElement="end-event">
+        <dc:Bounds x="2252" y="249" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2241" y="292" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1tiubxg_di" bpmnElement="Activity_1tiubxg">
+        <dc:Bounds x="660" y="227" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1bfwpwz_di" bpmnElement="Activity_1bfwpwz">
+        <dc:Bounds x="1900" y="437" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ilxk2t_di" bpmnElement="Activity_1ilxk2t">
+        <dc:Bounds x="1510" y="437" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1beagys_di" bpmnElement="Activity_1beagys">
+        <dc:Bounds x="1880" y="227" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_01e2pib_di" bpmnElement="Event_01e2pib">
+        <dc:Bounds x="312" y="289" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="271" y="330" width="52" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,19 @@
+--------------- BEGIN CAMUNDA LICENSE KEY ---------------
+DJaJ+/MoYyKMNYoAgdAcqG8Z8iOisTsVLs9LhaMHfK6nP1XQRIn6JLq33
+SK8/5FPlLBdj3685F1CsLRuobotdPF0kPOsp82HMZZaEBoCR59baZ4tRz
+LMjC/MnQfsQwguhaVXQIZmCmw0/iUrjuxIgki/qYCbocAXJhdIAYSSWmL
+hTtf3dyWqo2+SXUrZ9ziDtetduB3TtEw6bhIVvJNirS/GBwn1AEtviDP3
+ff+HuAdDJrSI2HAHjz+XZlF5L7ReXSIi7p+XhTawpc/owrywtEyvTJUpd
+v1wMDkX9pUuN5KeQzH/T4MW5+xd+IIK02pYDMYlxyoG3SoP/fTRAG6vLW
+js/rZQUv2fi9ZvzIaZ9PTSArOrYwDHVWAJOuwdm8Cbt79E5GYTsCdHVh0
+QkYHmUsVx1T+8La+lBzq8HeJbiX4kqLM06/0SngOdrQXkdfw9lkvjaHFA
+toV4L9WNK9be4IR8VeGyviC8Fp3e4tsfy388gJ7rvi1M5xyXHrGJySOa6
+kA3uWgduwmwwrk0d3OvYxjzNxQcrV6mDUWUfjdmQgY3EkEy8eiwm48v1z
+VMkfGMNSMLMj+FKJ2x3bFkreZNuBSbF3t9zJwt085j1c4x6sbv5uJT2R6
+3E33RQ6K39ejXURWPGL+cpol7z9a0Hv17ORyWA5okMfdZS2q7VCQCyS8=;
+customer = ank_2;
+expiryDate = unlimited;
+cawemo = true;
+optimize = true;
+camundaBPM = true;
+---------------  END CAMUNDA LICENSE KEY  ---------------

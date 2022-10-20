@@ -1,0 +1,40 @@
+version: '3'
+services:
+  postgres:
+    image: mdillon/postgis:11-alpine
+    environment:
+      POSTGRES_USER: skynet
+      POSTGRES_PASSWORD: skynet
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres-init:/docker-entrypoint-initdb.d
+      # To keep data between restarts uncomment the next line
+      # - ./postgres-data:/var/lib/postgresql/data
+
+  camunda:
+    image: camunda:local-build
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/camunda
+      SPRING_DATASOURCE_USERNAME: skynet
+      SPRING_DATASOURCE_PASSWORD: skynet
+      WAIT_FOR: postgres:5432
+      CAMUNDA_BPM_ADMIN-USER_ID: admin
+      CAMUNDA_BPM_ADMIN-USER_PASSWORD: admin
+      LOGGING_LEVEL_ROOT: INFO
+      SKYNET_HTTP_URLS_MOCK: http://mock-service:9999
+    ports:
+      - 8888:8080
+    volumes:
+      - ${RESOURCES}/camunda/skynet.bpmn:/camunda/configuration/resources/skynet.bpmn
+      - ${RESOURCES}/camunda/check_permissions.dmn:/camunda/configuration/resources/check_permissions.dmn
+    depends_on:
+      - postgres
+
+  mock-service:
+    image: rodolpheche/wiremock
+    ports:
+      - 9999:9999
+    volumes:
+      - ./mock-services:/home/wiremock/mappings
+    command: --verbose --global-response-templating --local-response-templating --port 9999

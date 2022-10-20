@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_19lp39p" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.6.0">
+  <bpmn:process id="hash_example" name="hash example" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0b6un0y</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="hash256" name="test hash" camunda:resultVariable="hashValue">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="hash_value_2">${Hash.sha256("que vamos hacer")}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_18bcu1k</bpmn:incoming>
+      <bpmn:outgoing>Flow_0vqwnw3</bpmn:outgoing>
+      <bpmn:script>${Hash.sha256(value)}</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="Event_1wnudw3">
+      <bpmn:incoming>Flow_0vqwnw3</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0vqwnw3" sourceRef="hash256" targetRef="Event_1wnudw3" />
+    <bpmn:sequenceFlow id="Flow_0b6un0y" sourceRef="StartEvent_1" targetRef="Activity_0edthzw" />
+    <bpmn:sequenceFlow id="Flow_18bcu1k" sourceRef="Activity_0edthzw" targetRef="hash256" />
+    <bpmn:scriptTask id="Activity_0edthzw" name="assing value" camunda:resultVariable="value">
+      <bpmn:incoming>Flow_0b6un0y</bpmn:incoming>
+      <bpmn:outgoing>Flow_18bcu1k</bpmn:outgoing>
+      <bpmn:script>que vamos hacer</bpmn:script>
+    </bpmn:scriptTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="hash_example">
+      <bpmndi:BPMNEdge id="Flow_18bcu1k_di" bpmnElement="Flow_18bcu1k">
+        <di:waypoint x="390" y="107" />
+        <di:waypoint x="450" y="107" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0b6un0y_di" bpmnElement="Flow_0b6un0y">
+        <di:waypoint x="215" y="107" />
+        <di:waypoint x="290" y="107" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vqwnw3_di" bpmnElement="Flow_0vqwnw3">
+        <di:waypoint x="550" y="107" />
+        <di:waypoint x="602" y="107" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="89" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0870hkg_di" bpmnElement="hash256">
+        <dc:Bounds x="450" y="67" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1wnudw3_di" bpmnElement="Event_1wnudw3">
+        <dc:Bounds x="602" y="89" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_091qjte_di" bpmnElement="Activity_0edthzw">
+        <dc:Bounds x="290" y="67" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

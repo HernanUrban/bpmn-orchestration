@@ -1,0 +1,141 @@
+# This configuration is intended for production use and was created with respect to the security guide.
+# The provided links to documentation guides for each property will give more information about the purpose of each property.
+# security guide: https://docs.camunda.org/manual/latest/user-guide/security/
+
+management.endpoints.web.exposure.include: '*'
+management.endpoint.health.show-details: always
+server.servlet.session.timeout: 2h
+
+management.metrics.distribution.slo.http.server.requests: 25ms, 50ms, 100ms, 200ms, 300ms, 400ms, 500ms, 600ms
+management.metrics.distribution.slo.camunda: 10ms, 50ms, 100ms, 250ms, 500ms, 1s
+management.metrics.distribution.slo.camunda.delegate.body: 256.0, 512.0, 768.0
+
+camunda.bpm:
+  metrics:
+    enabled: true
+    db-reporter-activate: true
+
+  # https://docs.camunda.org/manual/latest/user-guide/security/#http-header-security-in-webapps
+  # https://docs.camunda.org/manual/latest/webapps/shared-options/header-security/
+  webapp:
+    csrf:
+      enable-same-site-cookie: true
+      same-site-cookie-option: STRICT
+    header-security:
+      hsts-disabled: false
+      content-security-policy-value: base-uri 'self';
+        default-src 'self' 'unsafe-inline' 'unsafe-eval';
+        img-src 'self' data:;
+        block-all-mixed-content;
+        form-action 'self';
+        frame-ancestors 'none';
+        object-src 'none';
+        sandbox
+        allow-forms
+        allow-scripts
+        allow-same-origin
+        allow-popups
+
+  # https://docs.camunda.org/manual/latest/user-guide/security/#authorization
+  # https://docs.camunda.org/manual/latest/user-guide/process-engine/authorization-service/
+  authorization.enabled: true
+
+  # job executor will acquire the jobs with the highest priorities
+  job-executor-acquire-by-priority: false
+  job-execution:
+    # https://docs.camunda.org/manual/latest/user-guide/spring-boot-integration/configuration/
+    # https://forum.camunda.org/t/job-executor-pool-sizes-reason-for-default-values/5968
+    # "make sure your database connection pool has at least the same size as the thread pool"
+    # sync with spring.datasource.hikari.minimumIdle/maximumPoolSize
+    # Set to value > 1 to activate parallel job execution
+    core-pool-size: 3
+    # Maximum number of parallel threads executing jobs
+    max-pool-size: 10
+
+    # Number of jobs that can be queued in an in-memory queue, waiting for an execution thread to become available
+    queue-capacity: 3
+
+    # Each job has up to <lock-time-in-millis> to complete since it was acquired. After that time, it can be acquired and executed again.
+    lock-time-in-millis: 300000 # 5 min
+
+    # No more than <max-jobs-per-acquisition> will be locked on each acquisition
+    max-jobs-per-acquisition: 3
+    # Increment <wait-time-in-millis> in case there are less jobs available for execution than requested
+    wait-time-in-millis: 50
+    # Max polling rate for jobs (cap for wait-time-in-millis)
+    max-wait: 200
+
+    # Backoff on job acquisition failure https://camunda.com/blog/2015/09/scaling-camunda-bpm-in-cluster-job/
+    # (it can only happen with multiple nodes running)
+    backoff-time-in-millis: 50
+    max-backoff: 500
+
+  generic-properties.properties:
+    # https://docs.camunda.org/manual/latest/user-guide/security/#variable-values-from-untrusted-sources
+    deserialization-type-validation-enabled: true
+    deserialization-allowed-packages:
+    deserialization-allowed-classes:
+    # https://docs.camunda.org/manual/latest/user-guide/security/#password-policy
+    # https://docs.camunda.org/manual/latest/user-guide/process-engine/password-policy/
+    # https://docs.camunda.org/manual/latest/reference/deployment-descriptors/tags/process-engine/
+    enable-password-policy: false
+    ensure-job-due-date-not-null: false
+    # Retries by default:
+    # - 3 times immediately
+    # - 4 times after 30 secs each
+    # - 3 times after 1 mins each
+    # Max time waiting on retries = 10 retries in 5 min
+    #(doesn't support repeat syntax: https://stackoverflow.com/questions/63354490/camunda-retry-service-task-many-different-time-intervals)
+    failed-job-retry-time-cycle: PT0S,PT0S,PT0S,PT30S,PT30S,PT30S,PT30S,PT1M,PT1M,PT1M
+    initialize-telemetry: false
+    telemetry-reporter-activate: false
+    # https://docs.camunda.org/manual/7.14/reference/bpmn20/events/error-events/#unhandled-bpmn-error
+    enable-exceptions-after-unhandled-bpmn-error: true
+    # https://docs.camunda.org/manual/7.15/user-guide/process-engine/history/#history-cleanup
+    # https://docs.camunda.org/manual/7.14/reference/deployment-descriptors/tags/process-engine/#history-cleanup-configuration-parameters
+    # Doesn't include decisions due to a bug: https://jira.camunda.com/browse/CAM-13082
+    history-time-to-live: P1D
+    # reduce DB pressure on cleanup (default: 500)
+    history-cleanup-batch-size: 100
+    history-cleanup-metrics-enabled: true
+    batch-operation-history-time-to-live: P1D
+    history-cleanup-job-log-time-to-live: P1D
+    history-cleanup-batch-window-start-time: 06:00Z
+    history-cleanup-batch-window-end-time: 09:00Z
+    composite-incident-handlers-enabled: true
+
+  run:
+    # https://docs.camunda.org/manual/latest/user-guide/security/#authentication
+    # https://docs.camunda.org/manual/latest/user-guide/camunda-bpm-run/#authentication
+    auth.enabled: true
+
+  # https://docs.camunda.org/manual/latest/user-guide/security/#http-header-security-in-webapps
+  # https://docs.camunda.org/manual/latest/webapps/shared-options/header-security/
+  servlet.session.cookie:
+    secure: true
+    http-only: true
+
+
+# https://docs.camunda.org/manual/latest/user-guide/camunda-bpm-run/#logging
+# https://docs.camunda.org/manual/latest/user-guide/logging/#process-engine
+logging:
+  level.root: INFO
+
+# datasource configuration is required
+# https://docs.camunda.org/manual/latest/user-guide/camunda-bpm-run/#connect-to-a-database
+# https://docs.camunda.org/manual/latest/user-guide/camunda-bpm-run/#database
+spring.datasource:
+  # url: ???
+  driver-class-name: org.postgresql.Driver
+  # username: ???
+  # password: ???
+  hikari:
+    # https://forum.camunda.org/t/job-executor-pool-sizes-reason-for-default-values/5968
+    # "make sure your database connection pool has at least the same size as the thread pool"
+    # https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing
+    minimumIdle: 20
+    maximumPoolSize: 20
+    idleTimeout: 300000 # 5 min
+
+# Sentry config
+sentry.exception-resolver-order: -2147483647

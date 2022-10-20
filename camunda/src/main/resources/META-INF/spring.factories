@@ -1,0 +1,12 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.skynet4ever.spring.HttpProperties,\
+  com.skynet4ever.spring.Config,\
+  com.skynet4ever.variables.HttpVariablesBuilder,\
+  com.skynet4ever.HttpDelegate,\
+  com.skynet4ever.RequestBuilder,\
+  com.skynet4ever.CheckDuplicatedBusinessKey,\
+  com.skynet4ever.UUIDGenerator,\
+  com.skynet4ever.Hash,\
+  com.skynet4ever.DeploymentsCleanup,\
+  com.skynet4ever.SyncDelay,\
+  com.skynet4ever.spring.CustomIncidentHandlerConfig

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" id="Definitions_10fctlf" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <decision id="checkPermissionsTable" name="KYC Check Table">
+    <decisionTable id="DecisionTable_1m20krp" hitPolicy="FIRST">
+      <input id="Input_1" camunda:inputVariable="userPermissions.canBuy">
+        <inputExpression id="InputExpression_1" typeRef="boolean">
+          <text>userPermissions.canBuy</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_1pysb2l" camunda:inputVariable="userPermissions.canSell">
+        <inputExpression id="LiteralExpression_0hb5zzl" typeRef="boolean">
+          <text>userPermissions.canSell</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_0lcz84t" label="requestPermissionsCounter" biodi:width="297" camunda:inputVariable="requestPermissionsCounter">
+        <inputExpression id="LiteralExpression_0sb4rvm" typeRef="integer">
+          <text>requestPermissionsCounter</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_14jo7iy" label="userStatus" camunda:inputVariable="userStatus">
+        <inputExpression id="LiteralExpression_04xxc00" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" typeRef="string" />
+      <rule id="DecisionRule_1gr9to1">
+        <inputEntry id="UnaryTests_0iov5gy">
+          <text>true</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0mwgpp2">
+          <text>true</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1otxux0">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1qnfckp">
+          <text>"ACTIVE"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0oxul7g">
+          <text>"OK"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1gpimls">
+        <inputEntry id="UnaryTests_1nwdmyt">
+          <text>false</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1sbyc32">
+          <text>false</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0o9ahdj">
+          <text>&lt;= 5</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1ufuws9">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_02rc820">
+          <text>"PT1S"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_15a06v6">
+        <inputEntry id="UnaryTests_0f3bj9m">
+          <text>false</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0dkagiw">
+          <text>false</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_02y3ero">
+          <text>&lt;= 10</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_19do8ar">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0glx989">
+          <text>"PT10S"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0t79zh6">
+        <inputEntry id="UnaryTests_1hr7ztb">
+          <text>false</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1jbdd3p">
+          <text>false</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1vmulf5">
+          <text>&gt; 10</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1nidqae">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1fee5w1">
+          <text>"ERROR"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0chohlt">
+        <inputEntry id="UnaryTests_0u5wnoo">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0r6etz9">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0fhbxsb">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1nnwnk1">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0x8bueu">
+          <text>"ERROR"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="checkPermissionsTable">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

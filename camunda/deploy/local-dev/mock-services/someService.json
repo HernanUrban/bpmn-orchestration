@@ -1,0 +1,80 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/123/not-found"
+      },
+      "response": {
+        "status": 404,
+        "jsonBody": {
+          "data": null,
+          "error": {
+            "code" : "some.error.code",
+            "message" : "Some error message"
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/123/ok-get"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "userId": "1b1bfa3e-346f-467f-807e-351876998f05",
+            "email": "ok@skynet4ever.com",
+            "createdAt": "2020-06-05T16:44:31.18465"
+          },
+          "error": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/delay"
+      },
+      "response": {
+        "status": 200,
+        "fixedDelayMilliseconds": 10000,
+        "jsonBody": {
+          "data": "ok"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPathPattern": "/123/ok-post"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "userId": "1b1bfa3e-346f-467f-807e-351876998f05",
+            "email": "ok@skynet4ever.com",
+            "status": "DONE",
+            "createdAt": "2020-06-05T16:44:31.18465"
+          },
+          "error": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

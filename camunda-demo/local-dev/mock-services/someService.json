@@ -1,0 +1,188 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/123/not-found"
+      },
+      "response": {
+        "status": 404,
+        "jsonBody": {
+          "data": null,
+          "error": {
+            "code" : "some.error.code",
+            "message" : "Some error message"
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/123/ok-get"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "userId": "1b1bfa3e-346f-467f-807e-351876998f05",
+            "email": "ok@skynet4ever.com",
+            "createdAt": "2020-06-05T16:44:31.18465"
+          },
+          "error": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/delay"
+      },
+      "response": {
+        "status": 200,
+        "fixedDelayMilliseconds": 10000,
+        "jsonBody": {
+          "data": "ok"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPathPattern": "/user/external"
+      },
+      "response": {
+        "status": 200,
+        "fixedDelayMilliseconds": 5000,
+        "jsonBody": {
+          "data": {
+            "userId": "{{jsonPath request.body '$.userId' }}",
+            "email": "{{jsonPath request.body '$.userId' }}@skynet4ever.com",
+            "status": "ACCEPTED",
+            "createdAt": "2022-07-20T16:44:31.18465"
+          },
+          "error": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "urlPathPattern": "/user/.*/status"
+      },
+      "response": {
+        "status": 200,
+        "fixedDelayMilliseconds": 5000,
+        "jsonBody": {
+          "data": {
+            "userId": "{{request.pathSegments.[1]}}",
+            "email": "{{request.pathSegments.[1]}}@skynet4ever.com",
+            "status": "{{jsonPath request.body '$.newStatus' }}",
+            "createdAt": "2022-07-20T16:44:31.18465"
+          },
+          "error": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPathPattern": "/kyc/document/update"
+      },
+      "response": {
+        "status": 200,
+        "fixedDelayMilliseconds": 5000,
+        "jsonBody": {
+          "data": {
+            "userId": "{{jsonPath request.body '$.userId' }}",
+            "documents": [
+              {
+                "documentId": "dni_front",
+                "description": "DNI Front",
+                "status": "ACCEPTED"
+              },
+              {
+                "documentId": "dni_back",
+                "description": "DNI Back",
+                "status": "ACCEPTED"
+              },
+              {
+                "documentId": "selfie",
+                "description": "Face photo",
+                "status": "ACCEPTED"
+              }
+            ]
+          },
+          "error": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/user/.*/permissions"
+      },
+      "response": {
+        "status": 200,
+        "fixedDelayMilliseconds": 1000,
+        "jsonBody": {
+          "data": {
+            "userId": "{{request.pathSegments.[1]}}",
+            "status": "ACTIVE",
+            "permissions": {
+                "canBuy": true,
+                "canSell": true,
+                "canSwap": true
+              }
+          },
+          "error": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/user/123error/permissions"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "userId": "{{request.pathSegments.[1]}}",
+            "status": "ACTIVE",
+            "permissions": {
+              "canBuy": false,
+              "canSell": false,
+              "canSwap": false
+            }
+          },
+          "error": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}
