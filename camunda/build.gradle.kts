@@ -12,7 +12,7 @@ buildscript {
 apply(plugin = "org.owasp.dependencycheck")
 
 plugins {
-    val kotlinVersion = "1.4.20"
+    val kotlinVersion = "1.7.22"
     kotlin("jvm") version kotlinVersion
     kotlin("kapt") version kotlinVersion
     id("jacoco")

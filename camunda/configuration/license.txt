@@ -11,7 +11,7 @@ toV4L9WNK9be4IR8VeGyviC8Fp3e4tsfy388gJ7rvi1M5xyXHrGJySOa6
 kA3uWgduwmwwrk0d3OvYxjzNxQcrV6mDUWUfjdmQgY3EkEy8eiwm48v1z
 VMkfGMNSMLMj+FKJ2x3bFkreZNuBSbF3t9zJwt085j1c4x6sbv5uJT2R6
 3E33RQ6K39ejXURWPGL+cpol7z9a0Hv17ORyWA5okMfdZS2q7VCQCyS8=;
-customer = ank_2;
+customer = test123;
 expiryDate = unlimited;
 cawemo = true;
 optimize = true;
